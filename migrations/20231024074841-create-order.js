@@ -1,35 +1,36 @@
-"use strict";
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("services", {
+export default {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable("orders", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      serviceCategoryId: {
+      userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "service_categories",
+          model: "users",
           key: "id",
         },
         onUpdate: "cascade",
         onDelete: "cascade",
       },
-      name: {
+      serviceId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "services",
+          key: "id",
+        },
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      },
+      status: {
         type: Sequelize.STRING,
-      },
-      slug: {
-        unique: true,
-        type: Sequelize.STRING,
-      },
-      description: {
-        type: Sequelize.TEXT,
-      },
-      price: {
-        type: Sequelize.FLOAT,
+        defaultValue: "PENDING",
+        validate: {
+          isIn: [["PENDING", "SUCCESS", "CANCEL"]],
+        },
       },
       createdAt: {
         allowNull: false,
@@ -45,7 +46,7 @@ module.exports = {
       },
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("services");
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable("orders");
   },
 };
