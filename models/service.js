@@ -11,6 +11,10 @@ class Service extends Model {
       foreignKey: "serviceId",
       as: "orders",
     });
+    this.hasMany(models.Review, {
+      foreignKey: "serviceId",
+      as: "reviews",
+    });
   }
 }
 

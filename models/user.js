@@ -7,6 +7,10 @@ class User extends Model {
       foreignKey: "userId",
       as: "orders",
     });
+    this.hasMany(models.Review, {
+      foreignKey: "userId",
+      as: "reviews",
+    });
   }
 }
 
