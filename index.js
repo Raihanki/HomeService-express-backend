@@ -6,6 +6,8 @@ const fileUpload = require("express-fileupload");
 
 // user routes
 const authRoutes = require("./routes/auth.route.js");
+const serviceRoutes = require("./routes/service.route.js");
+const serviceCategoryRoutes = require("./routes/serviceCategory.route.js");
 
 const app = express();
 dotenv.config();
@@ -19,6 +21,8 @@ app.use(fileUpload());
 app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/services", serviceRoutes);
+app.use("/api/v1/categories", serviceCategoryRoutes);
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`Server running on port ${process.env.APP_PORT}`);
