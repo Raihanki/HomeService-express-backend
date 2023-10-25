@@ -1,5 +1,5 @@
-import { body, validationResult } from "express-validator";
-import User from "../models/user.js";
+const { body, validationResult } = require("express-validator");
+const db = require("../models");
 
 const rules = [
   body("name")
@@ -13,7 +13,7 @@ const rules = [
     .isEmail()
     .withMessage("Email must be valid")
     .custom(async (value) => {
-      const email = await User.findOne({ where: { email: value } });
+      const email = await db.User.findOne({ where: { email: value } });
       if (email) {
         throw new Error("Email already registered");
       }
@@ -42,4 +42,4 @@ const rules = [
   },
 ];
 
-export default rules;
+module.exports = rules;
