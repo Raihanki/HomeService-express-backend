@@ -31,7 +31,18 @@ module.exports = {
         type: Sequelize.STRING,
         defaultValue: "PENDING",
         validate: {
-          isIn: [["PENDING", "SUCCESS", "CANCEL"]],
+          isIn: [
+            [
+              "PENDING",
+              "ACCEPTED",
+              "REQ_ONPROCESS",
+              "ONPROCESS",
+              "REQ_SUCCESS",
+              "SUCCESS",
+              "REQ_CANCEL",
+              "CANCEL",
+            ],
+          ],
         },
       },
       createdAt: {

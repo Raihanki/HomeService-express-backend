@@ -24,8 +24,23 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: "PENDING",
         validate: {
-          isIn: [["PENDING", "SUCCESS", "CANCEL"]],
+          isIn: [
+            [
+              "PENDING",
+              "ACCEPTED",
+              "REQ_ONPROCESS",
+              "ONPROCESS",
+              "REQ_ONSUCCESS",
+              "SUCCESS",
+              "REQ_CANCEL",
+              "CANCEL",
+            ],
+          ],
         },
+      },
+      isCanceling: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {
