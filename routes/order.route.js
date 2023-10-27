@@ -4,6 +4,7 @@ const { index, store, show } = require("../controllers/order.controller");
 const {
   acceptOrder,
   requestProcessOrder,
+  acceptProcessOrder,
   requestSuccessOrder,
   acceptSuccessOrder,
   requestCancelOrder,
@@ -19,7 +20,7 @@ router.get("/:id", authenticate, show);
 // order process
 router.post("/accept/:id", authenticate, acceptOrder);
 router.post("/requestProcess/:id", authenticate, requestProcessOrder);
-router.post("/acceptProcess/:id", authenticate, requestProcessOrder);
+router.post("/acceptProcess/:id", authenticate, acceptProcessOrder);
 router.post("/requestSuccess/:id", authenticate, requestSuccessOrder);
 router.post("/acceptSuccess/:id", authenticate, acceptSuccessOrder);
 router.post("/requestCancel/:id", authenticate, requestCancelOrder);

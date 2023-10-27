@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
               "ACCEPTED",
               "REQ_ONPROCESS",
               "ONPROCESS",
-              "REQ_ONSUCCESS",
+              "REQ_SUCCESS",
               "SUCCESS",
               "REQ_CANCEL",
               "CANCEL",

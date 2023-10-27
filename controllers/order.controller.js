@@ -1,15 +1,42 @@
-const { Order, Service } = require("../models");
+const { Order, Service, User } = require("../models");
 const { Op } = require("sequelize");
 
 const index = async (req, res) => {
   try {
-    const orders = await Order.findAll({
-      where: {
-        ...(req.user.isSeller
-          ? { sellerId: req.user.id }
-          : { buyerId: req.user.id }),
-      },
-    });
+    let orders;
+    if (!req.user.isSeller) {
+      orders = await Order.findAll({
+        where: { userId: req.user.id },
+        include: [
+          {
+            model: Service,
+            as: "service",
+            attributes: ["name", "description", "price", "createdAt"],
+          },
+          {
+            model: User,
+            as: "user",
+            attributes: ["name", "email", "address", "telp"],
+          },
+        ],
+      });
+    } else {
+      orders = await Order.findAll({
+        include: [
+          {
+            model: Service,
+            as: "service",
+            where: { userId: req.user.id },
+            attributes: ["name", "description", "price", "createdAt"],
+          },
+          {
+            model: User,
+            as: "user",
+            attributes: ["name", "email", "address", "telp"],
+          },
+        ],
+      });
+    }
 
     res.status(200).json({ data: orders });
   } catch (err) {
@@ -64,11 +91,18 @@ const acceptOrder = async (req, res) => {
       where: {
         [Op.and]: [{ id: req.params.id }, { isCanceling: false }],
       },
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: ["userId"],
+        },
+      ],
     });
     if (!order) {
       return res.status(400).json({ message: "Order not found" });
     }
-    if (order.sellerId != req.user.id) {
+    if (order.service.userId != req.user.id) {
       return res.status(403).json({ message: "Access Forbiden" });
     } else if (order.status != "PENDING") {
       return res.status(400).json({ message: "Order already accepted" });
@@ -114,6 +148,7 @@ const acceptProcessOrder = async (req, res) => {
   if (req.user.isSeller) {
     return res.status(403).json({ message: "Access Forbiden" });
   }
+
   try {
     const order = await Order.findOne({
       where: {
@@ -203,11 +238,18 @@ const requestCancelOrder = async (req, res) => {
       where: {
         [Op.and]: [{ id }, { isCanceling: false }],
       },
+      include: [
+        {
+          model: Service,
+          as: "service",
+          attributes: ["userId"],
+        },
+      ],
     });
     if (!order) {
       return res.status(400).json({ message: "Order not found" });
     }
-    if (order.userId != req.user.id) {
+    if (order.service.userId != req.user.id) {
       return res.status(403).json({ message: "Access Forbiden" });
     }
 
