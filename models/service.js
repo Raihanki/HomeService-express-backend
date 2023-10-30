@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "user",
       });
+      this.belongsToMany(models.Image, {
+        through: models.ServiceImage,
+        as: "images",
+        foreignKey: "serviceId",
+      });
     }
   }
   Service.init(

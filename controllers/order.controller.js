@@ -1,5 +1,6 @@
 const { Order, Service, User } = require("../models");
 const { Op } = require("sequelize");
+const { cancelOrderQueue } = require("../queues");
 
 const index = async (req, res) => {
   try {
@@ -254,6 +255,15 @@ const requestCancelOrder = async (req, res) => {
     }
 
     await order.update({ isCanceling: true });
+
+    // Add to queue
+    cancelOrderQueue.add(
+      { orderId: order.id },
+      {
+        delay: 60000,
+      }
+    );
+
     res.status(200).json({ message: "Request Sended" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -282,6 +292,24 @@ const acceptCancelOrder = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+cancelOrderQueue.process(async (job) => {
+  console.log("cancelOrderQueue started for Job ID:", job.id);
+  try {
+    const orderId = job.data.orderId;
+    const order = await Order.findOne({ where: { id: orderId } });
+    if (order.isCanceling) {
+      await order.update({
+        isCanceling: false,
+        status: "CANCEL",
+      });
+    }
+    console.log("cancelOrderQueue completed for Job ID:", job.id);
+  } catch (err) {
+    console.log(err);
+    console.log("cancelOrderQueue completed for Job ID:", job.id);
+  }
+});
 
 module.exports = {
   index,

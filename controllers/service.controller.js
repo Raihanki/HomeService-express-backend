@@ -1,5 +1,12 @@
-const { Service, ServiceCategory, User } = require("../models");
+const {
+  Service,
+  ServiceCategory,
+  User,
+  Image,
+  ServiceImage,
+} = require("../models");
 const slug = require("slug");
+const cloudinary = require("cloudinary").v2;
 
 const index = async (req, res) => {
   try {
@@ -15,6 +22,11 @@ const index = async (req, res) => {
           as: "user",
           attributes: { exclude: ["password", "deletedAt"] },
         },
+        {
+          model: Image,
+          as: "images",
+          attributes: { exclude: ["deletedAt", "createdAt", "updatedAt"] },
+        },
       ],
       attributes: { exclude: ["deletedAt"] },
     });
@@ -27,6 +39,26 @@ const index = async (req, res) => {
 const store = async (req, res) => {
   if (!req.user.isSeller) {
     return res.status(403).json({ message: "Access Forbiden" });
+  }
+
+  let uploadedImages = [];
+  try {
+    if (req.files?.images !== undefined) {
+      let images = req.files.images;
+      if (!Array.isArray(images)) {
+        images = [images];
+      }
+      for (let i = 0; i < images.length; i++) {
+        const image = await cloudinary.uploader.upload(images[i].tempFilePath, {
+          folder: "HomeService/Services",
+        });
+        uploadedImages.push(image);
+      }
+    } else {
+      return res.status(400).json({ message: "Images required" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err });
   }
 
   const data = {
@@ -50,6 +82,19 @@ const store = async (req, res) => {
     });
     data.serviceCategoryId = category.id;
     const result = await Service.create(data);
+
+    uploadedImages.forEach(async (image) => {
+      const storedImage = await Image.create({
+        url: image.secure_url,
+        imagePublicId: image.public_id || null,
+      });
+      if (storedImage) {
+        await ServiceImage.create({
+          serviceId: result.id,
+          imageId: storedImage.id,
+        });
+      }
+    });
 
     res.status(201).json({ data: result });
   } catch (err) {

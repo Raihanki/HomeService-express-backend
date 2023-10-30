@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bull": "^4.11.4",
+    "cloudinary": "^1.41.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -19,6 +21,7 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.2",
+    "redis": "^4.6.10",
     "sequelize": "^6.33.0",
     "slug": "^8.2.3"
   },
