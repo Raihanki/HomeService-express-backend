@@ -1,5 +1,4 @@
 const express = require("express");
-const authenticate = require("../middleware/authenticate");
 const { index, store, show } = require("../controllers/order.controller");
 const {
   acceptOrder,
@@ -10,20 +9,21 @@ const {
   requestCancelOrder,
   acceptCancelOrder,
 } = require("../controllers/order.controller");
+const accountActivated = require("../middleware/accountActivated");
 
 const router = express.Router();
 
-router.get("/", authenticate, index);
-router.post("/:id", authenticate, store);
-router.get("/:id", authenticate, show);
+router.get("/", accountActivated, index);
+router.post("/:id", accountActivated, store);
+router.get("/:id", accountActivated, show);
 
 // order process
-router.post("/accept/:id", authenticate, acceptOrder);
-router.post("/requestProcess/:id", authenticate, requestProcessOrder);
-router.post("/acceptProcess/:id", authenticate, acceptProcessOrder);
-router.post("/requestSuccess/:id", authenticate, requestSuccessOrder);
-router.post("/acceptSuccess/:id", authenticate, acceptSuccessOrder);
-router.post("/requestCancel/:id", authenticate, requestCancelOrder);
-router.post("/acceptCancel/:id", authenticate, acceptCancelOrder);
+router.post("/accept/:id", accountActivated, acceptOrder);
+router.post("/requestProcess/:id", accountActivated, requestProcessOrder);
+router.post("/acceptProcess/:id", accountActivated, acceptProcessOrder);
+router.post("/requestSuccess/:id", accountActivated, requestSuccessOrder);
+router.post("/acceptSuccess/:id", accountActivated, acceptSuccessOrder);
+router.post("/requestCancel/:id", accountActivated, requestCancelOrder);
+router.post("/acceptCancel/:id", accountActivated, acceptCancelOrder);
 
 module.exports = router;

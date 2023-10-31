@@ -56,6 +56,18 @@ module.exports = (sequelize, DataTypes) => {
           len: [8, 20],
         },
       },
+      isConfirmed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      confirmedToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      expiredToken: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       sequelize,
